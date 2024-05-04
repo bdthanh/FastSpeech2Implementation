@@ -16,3 +16,6 @@ pandas==2.2.1
 pyyaml==6.0.1
 underthesea==6.8.0
 fastapi==0.110.2
+requests==2.31.0
+uvicorn==0.29.0
+pydantic==2.7.1
