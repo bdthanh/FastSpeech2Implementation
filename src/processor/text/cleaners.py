@@ -1,6 +1,6 @@
-""" from https://github.com/keithito/tacotron """
+"""Copied and modified from https://github.com/keithito/tacotron """
 
-'''
+"""
 Cleaners are transformations that run over the input text at both training and eval time.
 
 Cleaners can be selected by passing a comma-delimited list of cleaner names as the "cleaners"
@@ -10,7 +10,7 @@ hyperparameter. Some cleaners are English-specific. You'll typically want to use
      the Unidecode library (https://pypi.python.org/pypi/Unidecode)
   3. "basic_cleaners" if you do not want to transliterate (in this case, you should also update
      the symbols in symbols.py to match your data).
-'''
+"""
 
 
 # Regular expression matching whitespace:
@@ -43,36 +43,41 @@ _abbreviations = [(re.compile('\\b%s\\.' % x[0], re.IGNORECASE), x[1]) for x in 
 
 
 def expand_abbreviations(text):
+    """Replaces abbreviations in the input text with their expansions"""
     for regex, replacement in _abbreviations:
         text = re.sub(regex, replacement, text)
     return text
 
 
 def expand_numbers(text):
+    """Expands numbers in the input text to full words"""
     return normalize_numbers(text)
 
 
 def lowercase(text):
+    """Lowercases the input text"""
     return text.lower()
 
 
 def collapse_whitespace(text):
+    """Collapses multiple consecutive whitespace characters into one"""
     return re.sub(_whitespace_re, ' ', text)
 
 
 def convert_to_ascii(text):
+    """Converts the input text to ASCII using unidecode"""
     return unidecode(text)
 
 
 def basic_cleaners(text):
-    '''Basic pipeline that lowercases and collapses whitespace without transliteration.'''
+    """Basic pipeline that lowercases and collapses whitespace without transliteration"""
     text = lowercase(text)
     text = collapse_whitespace(text)
     return text
 
 
 def transliteration_cleaners(text):
-    '''Pipeline for non-English text that transliterates to ASCII.'''
+    """Pipeline for non-English text that transliterates to ASCII"""
     text = convert_to_ascii(text)
     text = lowercase(text)
     text = collapse_whitespace(text)
@@ -80,7 +85,7 @@ def transliteration_cleaners(text):
 
 
 def english_cleaners(text):
-    '''Pipeline for English text, including number and abbreviation expansion.'''
+    """Pipeline for English text, including number and abbreviation expansion"""
     text = convert_to_ascii(text)
     text = lowercase(text)
     text = expand_numbers(text)
