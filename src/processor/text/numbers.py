@@ -20,6 +20,7 @@ def _expand_decimal_point(m):
     """Expands decimals, e.g. 42.57 -> forty-two point fifty-seven"""
     return m.group(1).replace(".", " point ")
 
+
 def _expand_pounds(m):
     """Expands pounds, e.g. £42.57 -> forty-two pounds fifty-seven pence"""
     match = m.group(1)
@@ -40,6 +41,7 @@ def _expand_pounds(m):
         return "%s %s" % (pence, pence_unit)
     else:
         return "zero pounds"
+
 
 def _expand_dollars(m):
     """Expands dollars, e.g. $42.57 -> forty-two dollars fifty-seven cents"""
