@@ -1,0 +1,82 @@
+fastspeech2:
+  enc_layers: 4
+  enc_hidden: 256
+  enc_heads: 2
+  dec_layers: 4
+  dec_hidden: 256
+  dec_heads: 2
+  conv_filter_size: 1024
+  conv_kernel_size: 9
+  enc_dropout: 0.1
+  dec_dropout: 0.1
+  var_conv_filter_size: 256
+  var_conv_kernel_size: 3
+  var_dropout: 0.5
+
+variance_embedding:
+  pitch_quantization: "linear" # support 'linear' or 'log', 'log' is allowed only if the pitch values are not normalized during preprocessing
+  energy_quantization: "linear" # support 'linear' or 'log', 'log' is allowed only if the energy values are not normalized during preprocessing
+  n_bins: 256
+
+multi_speaker: False
+
+max_seq_len: 1000
+
+vocoder:
+  model: "HiFi-GAN" 
+  speaker: "LJSpeech" 
+
+path:
+  ckpt_path: "./output/ckpt/LJSpeech"
+  log_path: "./output/log/LJSpeech"
+  result_path: "./output/result/LJSpeech"
+optimizer:
+  batch_size: 48
+  betas: [0.9, 0.98]
+  eps: 0.000000001
+  weight_decay: 0.0
+  grad_clip_thresh: 1.0
+  grad_acc_step: 1
+  warm_up_step: 4000
+  anneal_steps: []
+  anneal_rate: 1.0
+step:
+  total_step: 160000
+  log_step: 100
+  synth_step: 1000
+  val_step: 1000
+  save_step: 10000
+
+
+dataset: "LJSpeech_paper"
+
+path:
+  corpus_path: "data/LJSpeech-1.1"
+  lexicon_path: "lexicon/ljspeech-lexicon.txt"
+  raw_path: "./raw_data/LJSpeech"
+  preprocessed_path: "./preprocessed_data/LJSpeech_paper"
+
+preprocessing:
+  val_size: 512
+  text:
+    text_cleaners: ["english_cleaners"]
+    language: "en"
+  audio:
+    sampling_rate: 22050
+    max_wav_value: 32768.0
+  stft:
+    filter_length: 1024
+    hop_length: 256
+    win_length: 1024
+  mel:
+    n_mel_channels: 80
+    mel_fmin: 0
+    mel_fmax: 8000 # please set to 8000 for HiFi-GAN vocoder, set to null for MelGAN vocoder
+  pitch:
+    feature: "frame_level" # support 'phoneme_level' or 'frame_level'
+    normalization: False
+  energy:
+    feature: "frame_level" # support 'phoneme_level' or 'frame_level'
+    normalization: False
+
+

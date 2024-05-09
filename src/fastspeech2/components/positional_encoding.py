@@ -1,6 +1,6 @@
 import torch
 from torch import Tensor
-from torch.nn import Dropout, Module
+from torch.nn import Module
 
 class PositionalEncoding(Module):
   
@@ -14,11 +14,11 @@ class PositionalEncoding(Module):
         positional_encoding[:, 0::2] = torch.sin(pos / (10000 ** (torch.arange(0, d_model, 2).float() / d_model)))
         positional_encoding[:, 1::2] = torch.cos(pos / (10000 ** (torch.arange(0, d_model, 2).float() / d_model)))
         positional_encoding = positional_encoding.unsqueeze(0)  
-        self.register_buffer('positional_encoding', positional_encoding)
-        self.dropout = Dropout(p=dropout)
+        self.register_buffer('positional_encoding', positional_encoding)        
         
         
     def forward(self, x: Tensor):
         _, seq_len, _ = x.size() # [batch_size, seq_len, d_model]
         x = x + self.positional_encoding[:, :seq_len]
-        return self.dropout(x)
+        
+        return x
