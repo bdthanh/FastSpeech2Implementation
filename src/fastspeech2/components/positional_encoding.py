@@ -4,13 +4,13 @@ from torch.nn import Module
 
 class PositionalEncoding(Module):
   
-    def __init__(self, n_pos: int, d_model: int = 512, dropout: float = 0.1) -> None:
+    def __init__(self, seq_len: int, d_model: int = 256) -> None:
         super().__init__()
         self.d_model = d_model
-        self.seq_len = n_pos
-        positional_encoding = torch.zeros(n_pos, d_model)
+        self.seq_len = seq_len
+        positional_encoding = torch.zeros(seq_len, d_model)
         positional_encoding.requires_grad = False
-        pos = torch.arange(0, n_pos).unsqueeze(dim=1)
+        pos = torch.arange(0, seq_len).unsqueeze(dim=1)
         positional_encoding[:, 0::2] = torch.sin(pos / (10000 ** (torch.arange(0, d_model, 2).float() / d_model)))
         positional_encoding[:, 1::2] = torch.cos(pos / (10000 ** (torch.arange(0, d_model, 2).float() / d_model)))
         positional_encoding = positional_encoding.unsqueeze(0)  

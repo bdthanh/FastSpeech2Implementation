@@ -4,7 +4,7 @@ from .layer_normalization import LayerNorm
 
 class VariancePredictor(Module):
     #TODO: Need to polish this class, the description in the paper is ambiguous
-    def __init__(self, d_input, d_hidden: 256, kernel_size: 3, filter_size = 256, dropout=0.5) -> None:
+    def __init__(self, d_input, d_hidden: int = 256, kernel_size: int = 3, filter_size: int = 256, dropout: float = 0.5) -> None:
         super().__init__()
         self.conv1d_1 = Conv1d()
         self.relu_1 = ReLU()

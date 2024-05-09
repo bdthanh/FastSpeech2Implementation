@@ -5,15 +5,15 @@ from torch.nn import Module, Dropout, Softmax, Linear
 
 class MultiHeadAttention(Module):
     
-    def __init__(self, d_model: int = 512, n_heads: int = 8, dropout: float = 0.1) -> None:
+    def __init__(self, d_hidden: int = 256, n_heads: int = 2, dropout: float = 0.1) -> None:
         super().__init__()
         self.n_heads = n_heads
-        self.d_model = d_model
+        self.d_hidden = d_hidden
         self.sdp_attn = ScaledDotProductAttention()
-        self.linear_q = Linear(d_model, d_model)
-        self.linear_k = Linear(d_model, d_model)
-        self.linear_v = Linear(d_model, d_model)
-        self.linear_concat = Linear(d_model, d_model)
+        self.linear_q = Linear(d_hidden, d_hidden)
+        self.linear_k = Linear(d_hidden, d_hidden)
+        self.linear_v = Linear(d_hidden, d_hidden)
+        self.linear_concat = Linear(d_hidden, d_hidden)
         self.dropout = Dropout(p=dropout)
         
     def forward(self, q: Tensor, k: Tensor, v: Tensor, mask: Tensor):
@@ -28,8 +28,8 @@ class MultiHeadAttention(Module):
       
     def _split(self, x: Tensor):
         batch_size, length, _ = x.size()
-        assert self.d_model % self.n_heads == 0, "Division of d_model to n_heads has remainder"
-        d_head = self.d_model // self.n_heads
+        assert self.d_hidden % self.n_heads == 0, "Division of d_hidden to n_heads has remainder"
+        d_head = self.d_hidden // self.n_heads
         x = x.view(batch_size, length, self.n_heads, d_head).transpose(1, 2)
       
         return x   
@@ -37,7 +37,7 @@ class MultiHeadAttention(Module):
       
     def _concat(self, x: Tensor):
         batch_size, _, _, _ = x.size()
-        x = x.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+        x = x.transpose(1, 2).contiguous().view(batch_size, -1, self.d_hidden)
         
         return x
         
