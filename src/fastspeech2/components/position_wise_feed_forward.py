@@ -3,7 +3,7 @@ from torch.nn import Module, Conv1d, ReLU, Dropout
 
 class PositionWiseFeedForward(Module):
     
-    def __init__(self, d_in, d_hidden, kernel_size, dropout: float = 0.1) -> None:
+    def __init__(self, d_in: int = 256, d_hidden: int = 1024, kernel_size: int = 9, dropout: float = 0.1) -> None:
         super().__init__()
         self.conv1d_1 = Conv1d(
             d_in, d_hidden, kernel_size=kernel_size, padding=(kernel_size-1)//2

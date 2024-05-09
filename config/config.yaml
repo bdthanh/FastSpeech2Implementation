@@ -5,7 +5,7 @@ fastspeech2:
   dec_layers: 4
   dec_hidden: 256
   dec_heads: 2
-  conv_filter_size: 1024
+  conv_filter_size: 1024 # output channel size of the convolutional layer
   conv_kernel_size: 9
   enc_dropout: 0.1
   dec_dropout: 0.1

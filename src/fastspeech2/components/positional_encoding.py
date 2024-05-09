@@ -4,7 +4,7 @@ from torch.nn import Module
 
 class PositionalEncoding(Module):
   
-    def __init__(self, seq_len: int, d_model: int = 256) -> None:
+    def __init__(self, seq_len: int = 1000, d_model: int = 256) -> None:
         super().__init__()
         self.d_model = d_model
         self.seq_len = seq_len
