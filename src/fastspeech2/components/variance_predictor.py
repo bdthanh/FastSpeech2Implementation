@@ -29,32 +29,4 @@ class VariancePredictor(Module):
             x = x.masked_fill(mask, 0.0)
             
         return x
-    
-class DurationPredictor(Module):
-    
-    def __init__(self) -> None:
-        super().__init__()
-        
-        
-    def forward(self, x):
-        pass
-    
-    
-class PitchPredictor(Module):
-    
-    def __init__(self) -> None:
-        super().__init__()
-        
-        
-    def forward(self, x):
-        pass
-    
-class EnergyPredictor(Module):
-    
-    def __init__(self) -> None:
-        super().__init__()
-        
-        
-    def forward(self, x):
-        pass
         
