@@ -17,8 +17,7 @@ class Decoder(Module):
         self.decoder_layers = ModuleList([deepcopy(single_layer) for _ in range(n_layers)])
         
         
-    def forward(self, src: Tensor, mask: Tensor):
-        x = self.embedding(src)
+    def forward(self, x: Tensor, mask: Tensor):
         x = self.pos_encoding(x)
         for layer in self.decoder_layers:
             x = layer(x, mask)
