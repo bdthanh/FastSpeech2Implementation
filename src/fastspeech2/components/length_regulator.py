@@ -16,15 +16,16 @@ class LengthRegulator(Module):
         for inner_x, pred_dur in zip(x, x_pred_dur):
             out = []
             for i, inner_x_item in enumerate(inner_x):
-                out.extend([inner_x_item] * pred_dur[i])
+                out.extend(inner_x_item.repeat(pred_dur[i], 1))
                 out = torch.cat(out, 0)
             output.append(out)
             mel_dur.append(out.size(0))
         if max_dur is not None:
-            output = [torch.cat([mel, torch.zeros(max_dur - mel.size(0), mel.size(1))], 0) for mel in output]
+            output = _pad(output, max_dur)
         else: 
-            pass
-        return output, mel_dur
+            output = _pad(output)
+        return output, torch.Tensor(mel_dur)
+    
     
 def _pad(x, mel_max_dur=None):
     if mel_max_dur:
@@ -32,16 +33,11 @@ def _pad(x, mel_max_dur=None):
     else: # max_dur in the batch
         mel_dur = max([x[i].size(0) for i in range(len(x))])
 
-    out_list = list()
+    out_list = []
     for i, batch in enumerate(x):
-        if len(batch.shape) == 1:
-            one_batch_padded = F.pad(
-                batch, (0, mel_dur - batch.size(0)), "constant", 0.0
-            )
-        elif len(batch.shape) == 2:
-            one_batch_padded = F.pad(
-                batch, (0, 0, 0, mel_dur - batch.size(0)), "constant", 0.0
-            )
+        one_batch_padded = F.pad(
+            batch, pad=(0, 0, 0, mel_dur - batch.size(0)), mode="constant", value=0.0
+        )
         out_list.append(one_batch_padded)
     out_padded = torch.stack(out_list)
     return out_padded
