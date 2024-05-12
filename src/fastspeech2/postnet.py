@@ -6,12 +6,13 @@ from torch.nn import Module, Conv1d, BatchNorm1d, Tanh, ReLU, ModuleList, Dropou
 #This PostNet arch is adopted from Tacotron 2 paper
 class PostNet(Module):
     
-    def __init__(self, n_mel_chans, filter_size, kernel_size, n_layers = 5, act_fn = "tanh", dropout = 0.2) -> None:
+    def __init__(self, n_mel_chans, conv_chans, kernel_size, n_layers = 5, act_fn = "tanh", dropout = 0.2) -> None:
         super().__init__()
-        first_layer = PostNetLayer(n_mel_chans, filter_size, kernel_size, act_fn, dropout)
-        single_middle_layer = PostNetLayer(filter_size, filter_size, kernel_size, act_fn, dropout)
-        last_layer = PostNetLayer(filter_size, n_mel_chans, kernel_size, None, dropout)
-        self.postnet_layers = ModuleList([first_layer] + [deepcopy(single_middle_layer) for _ in range(n_layers)] + [last_layer])
+        first_layer = PostNetLayer(n_mel_chans, conv_chans, kernel_size, act_fn, dropout)
+        single_middle_layer = PostNetLayer(conv_chans, conv_chans, kernel_size, act_fn, dropout)
+        last_layer = PostNetLayer(conv_chans, n_mel_chans, kernel_size, None, dropout)
+        assert n_layers >= 2, "Number of layers in PostNet must be greater than 2"
+        self.postnet_layers = ModuleList([first_layer] + [deepcopy(single_middle_layer) for _ in range(n_layers-2)] + [last_layer])
         
         
     def forward(self, x: Tensor):
@@ -29,7 +30,7 @@ class PostNetLayer(Module):
     def __init__(self, in_chans = 80, out_chans = 512, kernel_size = 5, activation_fn = None, dropout = 0.2) -> None:
         super().__init__()
         self.conv1d = Conv1d(in_chans, out_chans, kernel_size, padding=int(kernel_size-1) // 2)
-        self.batchnorm1d = BatchNorm1d(out_chans, eps=1e-9)
+        self.batchnorm1d = BatchNorm1d(out_chans, eps=1e-6)
         if activation_fn == "tanh":
             self.act_fn = Tanh()
         elif activation_fn == "relu":

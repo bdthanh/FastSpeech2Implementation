@@ -4,7 +4,7 @@ from torch.nn import Module
 
 class LayerNorm(Module):
     
-    def __init__(self, d_hidden: int = 256, eps: float = 1e-9) -> None:
+    def __init__(self, d_hidden: int = 256, eps: float = 1e-6) -> None:
         super().__init__()
         self.eps = eps
         self.d_hidden = d_hidden
