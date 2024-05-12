@@ -4,7 +4,7 @@ from torch.nn import Module
 from torch.nn import functional as F
 
 class LengthRegulator(Module):
-    #TODO: To be implemented
+   
     def __init__(self) -> None:
         super().__init__() 
     
@@ -22,7 +22,7 @@ class LengthRegulator(Module):
             mel_dur.append(out.size(0))
         if max_dur is not None:
             output = _pad(output, max_dur)
-        else: 
+        else: # pad to the longest length in the batch
             output = _pad(output)
         return output, torch.Tensor(mel_dur)
     
@@ -34,7 +34,8 @@ def _pad(x, mel_max_dur=None):
         mel_dur = max([x[i].size(0) for i in range(len(x))])
 
     out_list = []
-    for i, batch in enumerate(x):
+    for batch in x:
+        #TODO: Handle cases for mel_dur - batch.size(0) < 0
         one_batch_padded = F.pad(
             batch, pad=(0, 0, 0, mel_dur - batch.size(0)), mode="constant", value=0.0
         )
