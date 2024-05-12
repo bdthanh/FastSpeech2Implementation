@@ -39,7 +39,7 @@ class VarianceAdaptor(Module):
         self.pitch_embedding = torch.nn.Embedding(n_bins, d_in)
         self.energy_embedding = torch.nn.Embedding(n_bins, d_in)
     
-    
+            
     def forward(self, x: Tensor, pitch_trg: Tensor, energy_trg: Tensor = None, src_mask: Tensor = None, 
                 mel_mask: Tensor = None,max_dur: int = None, p_control: float = 1.0, e_control: float = 1.0, 
                 d_control: float = 1.0):

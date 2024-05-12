@@ -12,6 +12,8 @@ fastspeech2:
   var_conv_filter_size: 256
   var_conv_kernel_size: 3
   var_dropout: 0.5
+  postnet_filter_size: 512
+  postnet_kernel_size: 5
 
 variance_embedding:
   pitch_quantization: "log" # support 'linear' or 'log', 'log' is allowed only if the pitch values are not normalized during preprocessing
