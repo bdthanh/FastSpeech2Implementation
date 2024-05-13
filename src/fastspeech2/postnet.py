@@ -1,9 +1,8 @@
-import torch
 from torch import Tensor
 from copy import deepcopy
 from torch.nn import Module, Conv1d, BatchNorm1d, Tanh, ReLU, ModuleList, Dropout
 
-#This PostNet arch is adopted from Tacotron 2 paper
+# This PostNet architecture is adopted from Tacotron 2 paper
 class PostNet(Module):
     
     def __init__(self, n_mel_chans, conv_chans, kernel_size, n_layers = 5, act_fn = "tanh", dropout = 0.2) -> None:
@@ -16,12 +15,12 @@ class PostNet(Module):
         
         
     def forward(self, x: Tensor):
-        x = x.contiguous().transpose(1, 2)
+        residual = x.contiguous().transpose(1, 2)
         for layer in self.postnet_layers:
-            x = layer(x)
-        x = x.contiguous().transpose(1, 2)    
+            residual = layer(residual)
+        residual = residual.contiguous().transpose(1, 2)    
             
-        return x
+        return x + residual
     
     
 class PostNetLayer(Module):
