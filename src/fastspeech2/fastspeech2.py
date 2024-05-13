@@ -17,7 +17,7 @@ class FastSpeech2(Module):
         )
         
         self.variance_adaptor = VarianceAdaptor(
-            d_in=enc_hidden, conv_chans=var_conv_chans, kernel_size=var_kernel_size, dropout=var_dropout, n_bins= n_bins
+            d_in=enc_hidden, conv_chans=var_conv_chans, kernel_size=var_kernel_size, dropout=var_dropout, n_bins = n_bins
         )
         
         self.decoder = Decoder(
@@ -34,7 +34,7 @@ class FastSpeech2(Module):
     def forward(self, x, src_mask, mel_mask, pitch_trg, energy_trg, max_dur, p_control, e_control, d_control):
         x = self.encoder(x, src_mask)
         x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
-            x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control
+            x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control    
         )
         x = self.decoder(x, mel_mask)
         postnet_x = self.postnet(x)

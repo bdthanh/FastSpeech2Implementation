@@ -24,8 +24,7 @@ class PostNet(Module):
     
     
 class PostNetLayer(Module):
-    #TODO: To implement BatchNorm1d if possible
-    #TODO: Try ReLU instead to see which one is better ReLU or Tanh (Tanh is from the paper)
+    
     def __init__(self, in_chans = 80, out_chans = 512, kernel_size = 5, activation_fn = None, dropout = 0.2) -> None:
         super().__init__()
         self.conv1d = Conv1d(in_chans, out_chans, kernel_size, padding=int(kernel_size-1) // 2)
@@ -40,7 +39,7 @@ class PostNetLayer(Module):
         
         
     def forward(self, x):
-        x = self.batchnorm1d(self.conv1d(x))
+        x = self.batchnorm1d(self.conv1d(x)) 
         if self.act_fn != None: 
             x = self.act_fn(x)
         
