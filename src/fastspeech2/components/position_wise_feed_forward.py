@@ -12,7 +12,6 @@ class PositionWiseFeedForward(Module):
         self.conv1d_2 = Conv1d(
             conv_chans, d_in, kernel_size=1, padding=(1 - 1) // 2
         )
-        self.relu_2 = ReLU()
         self.dropout = Dropout(p=dropout)
         
     def forward(self, x: Tensor) -> Tensor:

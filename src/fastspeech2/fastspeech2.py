@@ -36,10 +36,10 @@ class FastSpeech2(Module):
         x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
             x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control
         )
-        x, mel_mask = self.decoder(x, mel_mask)
+        x = self.decoder(x, mel_mask)
         postnet_x = self.postnet(x)
         
-        return (x, postnet_x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
+        return (x, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
     
     
 def get_fastspeech2(config, preload: bool = False) -> FastSpeech2:

@@ -42,9 +42,11 @@ class DecoderLayer(Module):
     def forward(self, x: Tensor, mask: Tensor):
         _x = self.self_attn(x, x, x, mask)
         x = self.self_attn_layer_norm(x + self.self_attn_dropout(_x))
+        masked_x = x.masked_fill(mask==0, 0)
         
         _x = self.feed_fwd(x)
         x = self.feed_fwd_layer_norm(x + self.feed_fwd_dropout(_x))
+        masked_x = x.masked_fill(mask==0, 0)
         
-        return x, mask
+        return masked_x
         

@@ -26,7 +26,7 @@ class VariancePredictor(Module):
         x = x.transpose(1, 2)
         x = self.linear(x).squeeze(-1)
         if mask is not None:
-            x = x.masked_fill(mask, 0.0)
+            x = x.masked_fill(mask==0, 0.0)
             
         return x
         
