@@ -53,7 +53,10 @@ step:
 dataset: "LJSpeech_paper"
 
 path:
-  corpus_path: "data/LJSpeech-1.1"
+  project_path: "C:/Users/e0817820/Desktop/Project/FastSpeech2Implementation/"
+  original_path: "data/LJSpeech-1.1"
+  pre_mfa_path: "data/pre_mfa_LJSpeech"
+  post_mfa_path: "data/post_mfa_LJSpeech"
   lexicon_path: "lexicon/ljspeech-lexicon.txt"
   raw_path: "./raw_data/LJSpeech"
   preprocessed_path: "./preprocessed_data/LJSpeech_paper"
