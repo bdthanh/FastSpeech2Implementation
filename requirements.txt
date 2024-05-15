@@ -21,3 +21,5 @@ requests==2.31.0
 uvicorn==0.29.0
 pydantic==2.7.1
 g2p_en==2.1.0
+montreal-forced-aligner==3.0.7
+tgt==1.5
