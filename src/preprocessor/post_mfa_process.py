@@ -17,8 +17,8 @@ class Preprocessor:
     def __init__(self, config) -> None:
         self.config = config
         self.project_dir = config['path']['project_path']
-        self.pre_mfa_dir = os.path.join(self.project_dir, config['path']['pre_mfa_path'])
         self.speaker = config['vocoder']['speaker']
+        self.pre_mfa_dir = os.path.join(self.project_dir, config['path']['pre_mfa_path'], self.speaker)
         self.post_mfa_dir = os.path.join(self.project_dir, config['path']['post_mfa_path'], self.speaker)
         self.out_dir = os.path.join(self.project_dir, config['path']['final_path'])
         self.sampling_rate = config['preprocessing']['audio']['sampling_rate']
@@ -48,25 +48,26 @@ class Preprocessor:
         out, n_frames = [], 0
         pitch_scaler = StandardScaler()
         energy_scaler = StandardScaler()
-        for wav_file in tqdm(os.listdir(self.pre_mfa_dir), total=13100, desc="Processing audio & textgrid"):
+        for wav_file in tqdm(os.listdir(self.pre_mfa_dir), total=26200, desc="Processing audio & textgrid"):
             if ".wav" not in wav_file:
                 continue
             basename = wav_file.split('.')[0]
             textgrid_path = os.path.join(
-                self.out_dir, "TextGrid", self.speaker, "{}.TextGrid".format(basename)
+                self.post_mfa_dir, "{}.TextGrid".format(basename)
             )
+            print(textgrid_path)
             if os.path.exists(textgrid_path):
+                
                 outcome = self.process_utterance(basename)
                 if outcome is None:
                     continue
                 info, pitch, energy, durs = outcome
                 out.append(info)
-            if len(pitch) > 0:
-                pitch_scaler.partial_fit(pitch.reshape((-1, 1)))
-            if len(energy) > 0:
-                energy_scaler.partial_fit(energy.reshape((-1, 1)))
-
-            n_frames += durs
+                if len(pitch) > 0:
+                    pitch_scaler.partial_fit(pitch.reshape((-1, 1)))
+                if len(energy) > 0:
+                    energy_scaler.partial_fit(energy.reshape((-1, 1)))
+                n_frames += durs
             
         pitch_mean = pitch_scaler.mean_[0] if self.pitch_norm else 0
         pitch_std = pitch_scaler.scale_[0] if self.pitch_norm else 1
@@ -117,10 +118,10 @@ class Preprocessor:
         return out
         
     def process_utterance(self, basename):
-        wav_path = os.path.join(self.pre_mfa_dir, self.speaker, f'{basename}.wav')
-        txt_path = os.path.join(self.pre_mfa_dir, self.speaker, f'{basename}.lab')
+        wav_path = os.path.join(self.pre_mfa_dir, f'{basename}.wav')
+        txt_path = os.path.join(self.pre_mfa_dir, f'{basename}.lab')
         textgrid_path = os.path.join(
-            self.post_mfa_dir, "TextGrid", self.speaker, "{}.TextGrid".format(basename)
+            self.post_mfa_dir, "{}.TextGrid".format(basename)
         )
         textgrid = tgt.io.read_textgrid(textgrid_path)
         phones, durs, start_time, end_time = self.get_alignment(textgrid.get_tier_by_name("phones"))
@@ -131,7 +132,9 @@ class Preprocessor:
         wav = wav[int(self.sampling_rate * start_time):int(self.sampling_rate * end_time)].astype(np.float32)
         with open(txt_path, 'r') as f:
             raw_text = f.readline().strip("\n")
-        pitch, t = pw.dio(wav.astype(np.float64), self.sampling_rate, frame_preriod=self.hop_length/self.sampling_rate)
+        pitch, t = pw.dio(
+            wav.astype(np.float64), self.sampling_rate, frame_period=self.hop_length/self.sampling_rate*1000
+        )
         pitch = pw.stonemask(wav.astype(np.float64), pitch, t, self.sampling_rate)
         pitch = pitch[:sum(durs)]
         if np.sum(pitch != 0) <= 1:
