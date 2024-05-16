@@ -55,7 +55,6 @@ class Preprocessor:
             textgrid_path = os.path.join(
                 self.post_mfa_dir, "{}.TextGrid".format(basename)
             )
-            print(textgrid_path)
             if os.path.exists(textgrid_path):
                 
                 outcome = self.process_utterance(basename)
@@ -160,9 +159,9 @@ class Preprocessor:
         return (
             "|".join([basename, self.speaker, phones_str, raw_text]),
             #TODO: See if removing outlier is needed
-            # self.remove_outlier(pitch),
-            # self.remove_outlier(energy),
-            pitch, energy,
+            self.remove_outlier(pitch),
+            self.remove_outlier(energy),
+            # pitch, energy,
             mel_spectrogram.shape[1]
         )
 

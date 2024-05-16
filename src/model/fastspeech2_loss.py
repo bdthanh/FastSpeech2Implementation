@@ -17,4 +17,5 @@ class FastSpeech2Loss(Module):
         log_dur_trg.requires_grad = False 
         pitch_trg.requires_grad = False 
         energy_trg.requires_grad = False 
-        pass
+        
+        
