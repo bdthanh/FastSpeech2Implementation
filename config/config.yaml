@@ -32,6 +32,7 @@ path:
   ckpt_path: "./output/ckpt/LJSpeech"
   log_path: "./output/log/LJSpeech"
   result_path: "./output/result/LJSpeech"
+  
 optimizer:
   batch_size: 48
   betas: [0.9, 0.98]
@@ -49,7 +50,6 @@ step:
   val_step: 1000
   save_step: 10000
 
-
 dataset: "LJSpeech_paper"
 
 path:
@@ -57,6 +57,7 @@ path:
   original_path: "data/LJSpeech-1.1"
   pre_mfa_path: "data/pre_mfa_LJSpeech"
   post_mfa_path: "data/post_mfa_LJSpeech"
+  final_path: "data/final_LJSpeech"
   lexicon_path: "lexicon/ljspeech-lexicon.txt"
   raw_path: "./raw_data/LJSpeech"
   preprocessed_path: "./preprocessed_data/LJSpeech_paper"
