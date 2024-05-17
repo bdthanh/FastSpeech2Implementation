@@ -2,7 +2,7 @@
 
 First, we need to do some initial processing for later alignment process, please run
 ```
-python pre_mfa_process.py --config [PATH TO config.yaml]
+python src\pre_mfa_process.py --config [PATH TO config.yaml]
 ```
  
 According to the FastSpeech 2 paper, the authors used [Montreal Forced Aligner](https://montreal-forced-aligner.readthedocs.io/en/latest/) to align the utterances and the phoneme sequences. First, we need to download the MFA library:
@@ -24,5 +24,5 @@ mfa align data\pre_mfa_LJSpeech english_us_mfa english_mfa data\post_mfa_LJSpeec
 
 After that, run the processing scripts to get duration, pitch and energy targets:
 ```
-python ...
+python src\post_mfa_process.py --config [PATH TO config.yaml]
 ```
