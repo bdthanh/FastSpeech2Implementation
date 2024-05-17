@@ -11,17 +11,15 @@ conda config --add channels conda-forge
 conda install montreal-forced-aligner
 ```
 
-The pretrained acoustic model and its corresponding dictionary are also neccessary. Run the command: 
+Run the following command to train the new MFA acoustic model using librispeech-lexicon.txt, which takes about 3-5 hours:
 ```
-mfa model download acoustic english_mfa
-mfa model download dictionary english_us_mfa
+mfa train data\pre_mfa_LJSpeech\LJSpeech lexicon\librispeech-lexicon.txt data\post_mfa_LJSpeech\new_mfa.zip 
+```
+Then, run the following command to align the dataset, and this will take about another 4-5 hours:
+```
+mfa align data\pre_mfa_LJSpeech\LJSpeech data\post_mfa_LJSpeech\librispeech-lexicon.dict data\post_mfa_LJSpeech\new_mfa.zip data\post_mfa_LJSpeech --clean
 ```
 
-Then, run the following command to align the dataset:
-```
-mfa align data\pre_mfa_LJSpeech english_us_mfa english_mfa data\post_mfa_LJSpeech
-mfa train data\pre_mfa_LJSpeech\LJSpeech lexicon\librispeech-lexicon.txt data\post_mfa_LJSpeech\new_mfa.zip --output_diretory data\post_mfa_LJSpeech
-```
 
 After that, run the processing scripts to get duration, pitch and energy targets:
 ```

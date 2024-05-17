@@ -27,11 +27,6 @@ max_seq_len: 1000
 vocoder:
   model: "HiFi-GAN" 
   speaker: "LJSpeech" 
-
-path:
-  ckpt_path: "./output/ckpt/LJSpeech"
-  log_path: "./output/log/LJSpeech"
-  result_path: "./output/result/LJSpeech"
   
 optimizer:
   batch_size: 48
@@ -43,9 +38,10 @@ optimizer:
   warm_up_step: 4000
   anneal_steps: []
   anneal_rate: 1.0
+  
 step:
+  num_epochs: 600
   total_step: 160000
-  log_step: 100
   synth_step: 1000
   val_step: 1000
   save_step: 10000
@@ -59,8 +55,9 @@ path:
   post_mfa_path: "data/post_mfa_LJSpeech"
   final_path: "data/final_LJSpeech"
   lexicon_path: "lexicon/ljspeech-lexicon.txt"
-  raw_path: "./raw_data/LJSpeech"
-  preprocessed_path: "./preprocessed_data/LJSpeech_paper"
+  checkpoint_path: "checkpoints"
+  checkpoint_best: "checkpoints/checkpoint_best.pt"
+  checkpoint_last: "checkpoints/checkpoint_last.pt"
 
 preprocessing:
   val_size: 512

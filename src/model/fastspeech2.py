@@ -31,7 +31,7 @@ class FastSpeech2(Module):
         )
     
     
-    def forward(self, x, src_mask, mel_mask, pitch_trg, energy_trg, max_dur, p_control, e_control, d_control):
+    def forward(self, x, src_mask, mel_mask, pitch_trg, energy_trg, max_dur, p_control=1.0, e_control=1.0, d_control=1.0):
         x = self.encoder(x, src_mask)
         x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
             x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control    
@@ -42,7 +42,7 @@ class FastSpeech2(Module):
         return (x, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
     
     
-def get_fastspeech2(config, preload: bool = False) -> FastSpeech2:
+def get_fastspeech2(config) -> FastSpeech2:
     #TODO: Initialize after finalize config file structure
     #TODO: Load checkpoint if exists
     phoneme_size = config[""]
