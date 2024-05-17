@@ -20,6 +20,7 @@ mfa model download dictionary english_us_mfa
 Then, run the following command to align the dataset:
 ```
 mfa align data\pre_mfa_LJSpeech english_us_mfa english_mfa data\post_mfa_LJSpeech
+mfa train data\pre_mfa_LJSpeech\LJSpeech lexicon\librispeech-lexicon.txt data\post_mfa_LJSpeech\new_mfa.zip --output_diretory data\post_mfa_LJSpeech
 ```
 
 After that, run the processing scripts to get duration, pitch and energy targets:
