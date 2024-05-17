@@ -5,29 +5,29 @@ import numpy as np
 from src.utils import pad_1D, pad_2D
 
 from torch.utils.data import Dataset
+from .symbol_vocabulary import SymbolVocabulary
 
 class ParallelDataset(Dataset):
     
-    def __init__(self, filename, config):
+    def __init__(self, symbol_vocab: SymbolVocabulary, filename, config):
         self.dataset_name = config["dataset"]
         self.project_path = config['path']['project_path']
         self.post_mfa_path = config["path"]["post_mfa_path"]
         self.final_path = config['path']['final_path']
         self.cleaners = config["preprocessing"]["text"]["text_cleaners"]
-
+        self.symbol_vocab = symbol_vocab
         self.basenames, self.speakers, self.phonemes, self.raw_texts = self.process_metadata(
             filename
         )
 
     def __len__(self):
-        return len(self.text)
+        return len(self.phonemes)
 
     def __getitem__(self, idx):
         basename = self.basenames[idx]
         speaker = self.speakers[idx]
         raw_text = self.raw_texts[idx]
-        #TODO: Implement mapping phoneme to id
-        phoneme_enc = np.array(phoneme_to_id(self.phonemes[idx], self.cleaners))
+        phoneme_enc = np.array(self.symbol_vocab.symbols_to_ids(self.phonemes[idx]))
         mel_path = os.path.join(self.final_path, "mel", get_target_path(speaker, "mel", basename))
         mel = np.load(mel_path)
         pitch_path = os.path.join(self.final_path, "pitch", get_target_path(speaker, "pitch", basename))
@@ -64,7 +64,7 @@ class ParallelDataset(Dataset):
                 raw_texts.append(raw_text)
             return basenames, speakers, phonemes, raw_texts
 
-    def reprocess(self, data, idxs):
+    def process_for_batch(self, data, idxs):
         ids = [data[idx]["id"] for idx in idxs]
         speakers = [data[idx]["speaker"] for idx in idxs]
         phonemes = [data[idx]["phoneme"] for idx in idxs]
@@ -101,22 +101,17 @@ class ParallelDataset(Dataset):
         
     def collate_fn(self, data):
         data_size = len(data)
-
-        if self.sort:
-            len_arr = np.array([d["text"].shape[0] for d in data])
-            idx_arr = np.argsort(-len_arr)
-        else:
-            idx_arr = np.arange(data_size)
+        idx_arr = np.arange(data_size)
 
         tail = idx_arr[len(idx_arr) - (len(idx_arr) % self.batch_size) :]
         idx_arr = idx_arr[: len(idx_arr) - (len(idx_arr) % self.batch_size)]
         idx_arr = idx_arr.reshape((-1, self.batch_size)).tolist()
-        if not self.drop_last and len(tail) > 0:
+        if len(tail) > 0:
             idx_arr += [tail.tolist()]
 
         output = list()
         for idx in idx_arr:
-            output.append(self.reprocess(data, idx))
+            output.append(self.process_for_batch(data, idx))
 
         return output
     

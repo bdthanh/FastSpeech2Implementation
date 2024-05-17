@@ -55,3 +55,13 @@ def pad_2D(inputs, maxlen=None):
         output = np.stack([pad(x, max_len) for x in inputs])
 
     return output
+
+def get_mask_from_lengths(lengths, device, max_len=None):
+    batch_size = lengths.shape[0]
+    if max_len is None:
+        max_len = torch.max(lengths).item()
+
+    ids = torch.arange(0, max_len).unsqueeze(0).expand(batch_size, -1).to(device)
+    mask = ids <= lengths.unsqueeze(1).expand(-1, max_len) # True (1) for non-pad item, False (0) otherwise
+
+    return mask

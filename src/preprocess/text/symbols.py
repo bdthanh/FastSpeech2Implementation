@@ -7,7 +7,7 @@ The default is a set of ASCII characters that works well for English or text tha
 For other data, you can modify _characters. See TRAINING_DATA.md for details. 
 """
 
-from text import cmudict
+import cmudict
 
 _pad = "_"
 _punctuation = "!'(),.:;? "
