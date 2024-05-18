@@ -110,7 +110,7 @@ class Preprocessor:
         with open(os.path.join(self.out_dir, "train.txt"), "w", encoding="utf-8") as f:
             for m in out[self.val_size :]:
                 f.write(m + "\n")
-        with open(os.path.join(self.out_dir, "val.txt"), "w", encoding="utf-8") as f:
+        with open(os.path.join(self.out_dir, "valid.txt"), "w", encoding="utf-8") as f:
             for m in out[: self.val_size]:
                 f.write(m + "\n")
 

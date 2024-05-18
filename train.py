@@ -49,7 +49,7 @@ def get_ds(config):
 def unpack_batch(batch, device):
     ids = batch['ids']
     raw_texts = batch['raw_texts']
-    speakers = torch.from_numpy(batch['speakers']).long().to(device)
+    speakers = batch['speakers']
     phonemes = torch.from_numpy(batch['phonemes']).long().to(device)
     phonemes_lens = torch.from_numpy(batch['phonemes_lens']).to(device)
     max_phoneme_len = batch['max_phoneme_len']
@@ -68,7 +68,7 @@ def epoch_eval(model: FastSpeech2, global_step: int, epoch: int, val_dataloader:
 def train(config):
     device = choose_device()
     symbol_vocab, train_loader, valid_loader = get_ds(config)
-    model = get_fastspeech2(config)
+    model = get_fastspeech2(config, len(symbol_vocab))
     optimizer = get_optimizer(model, config, cur_step=0)
     initial_epoch, global_step = 0, 0
     model, optimizer, initial_epoch, global_step = load_checkpoint_if_exists(
@@ -77,9 +77,9 @@ def train(config):
     num_params = get_num_params(model)
     print(f"Number of FastSpeech2 parameter is: {num_params}")
     loss_func = FastSpeech2Loss()
-    wandb.define_metric("global_step")
-    wandb.define_metric("validation/*", step_metric="global_step")
-    wandb.define_metric("train/*", step_metric="global_step")
+    # wandb.define_metric("global_step")
+    # wandb.define_metric("validation/*", step_metric="global_step")
+    # wandb.define_metric("train/*", step_metric="global_step")
     
     grad_acc_step = config["optimizer"]["grad_acc_step"]
     grad_clip_thresh = config["optimizer"]["grad_clip_thresh"]
@@ -96,8 +96,8 @@ def train(config):
         for batch in batch_iter:
             optimizer.zero_grad() 
             ids, raw_texts, speakers, phonemes, phonemes_lens, max_phoneme_len, mel_trg, mel_lens, max_mel_len, pitch_trg, energy_trg, dur_trg = unpack_batch(batch, device)
-            src_mask = get_mask_from_lengths(phonemes_lens, max_phoneme_len)
-            mel_mask = get_mask_from_lengths(mel_lens, max_mel_len)
+            src_mask = get_mask_from_lengths(phonemes_lens, device, max_phoneme_len)
+            mel_mask = get_mask_from_lengths(mel_lens, device, max_mel_len)
             #need 2 mel_mask for pred duration
             mel_pred, mel_mask, postnet_mel_pred, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = model(
                 phonemes, src_mask, mel_mask, pitch_trg, energy_trg
@@ -107,12 +107,12 @@ def train(config):
             )
             total_loss = total_loss / grad_acc_step
             
-            wandb.log({'train/total_loss': total_loss.item(), 'global_step': global_step})
-            wandb.log({'train/mel_loss': mel_loss.item(), 'global_step': global_step})
-            wandb.log({'train/mel_postnet_loss': mel_postnet_loss.item(), 'global_step': global_step})
-            wandb.log({'train/dur_loss': dur_loss.item(), 'global_step': global_step})
-            wandb.log({'train/pitch_loss': pitch_loss.item(), 'global_step': global_step})
-            wandb.log({'train/energy_loss': energy_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/total_loss': total_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/mel_loss': mel_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/mel_postnet_loss': mel_postnet_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/dur_loss': dur_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/pitch_loss': pitch_loss.item(), 'global_step': global_step})
+            # wandb.log({'train/energy_loss': energy_loss.item(), 'global_step': global_step})
             
             total_loss.backward()
             if global_step % grad_acc_step == 0:
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     current_dir = current_file_path.parent 
     config_path = current_dir / 'config' / 'config.yaml'
     config = load_config(config_path)
-    create_if_missing_folder(config['path']['checkpoint_dir'])
-    wandb.init(project='fastspeech2', config=config)
+    create_if_missing_folder(config['path']['checkpoint_path'])
+    # wandb.init(project='fastspeech2', config=config)
     train(config)
-    wandb.finish()
+    # wandb.finish()

@@ -14,6 +14,9 @@ fastspeech2:
   var_dropout: 0.5
   postnet_filter_size: 512
   postnet_kernel_size: 5
+  postnet_layers: 5
+  postnet_dropout: 0.1
+  postnet_act_fn: "tanh"
 
 variance_embedding:
   pitch_quantization: "log" # support 'linear' or 'log', 'log' is allowed only if the pitch values are not normalized during preprocessing
@@ -49,6 +52,7 @@ step:
 dataset: "LJSpeech_paper"
 
 path:
+  stats_path: "data/final_LJSpeech/stats.json"
   project_path: "C:/Users/e0817820/Desktop/Project/FastSpeech2Implementation/"
   original_path: "data/LJSpeech-1.1"
   pre_mfa_path: "data/pre_mfa_LJSpeech"

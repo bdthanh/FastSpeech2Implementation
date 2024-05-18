@@ -18,7 +18,7 @@ class ScheduledOptim:
         self.anneal_steps = config["optimizer"]["anneal_steps"]
         self.anneal_rate = config["optimizer"]["anneal_rate"]
         self.current_step = current_step
-        self.init_lr = np.power(config["transformer"]["encoder_hidden"], -0.5)
+        self.init_lr = np.power(config["fastspeech2"]["enc_hidden"], -0.5)
 
     def step_and_update_lr(self):
         self._update_learning_rate()

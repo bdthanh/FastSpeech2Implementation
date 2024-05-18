@@ -3,6 +3,7 @@ from .encoder import Encoder
 from .variance_adaptor import VarianceAdaptor
 from .decoder import Decoder
 from .postnet import PostNet
+from .components.positional_encoding import get_positional_encoding
 
 class FastSpeech2(Module):
     
@@ -36,38 +37,38 @@ class FastSpeech2(Module):
         x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
             x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control    
         )
+        _, seq_len, _ = x.size()
+        x = x + get_positional_encoding(seq_len, x.size(-1))
         x = self.decoder(x, mel_mask)
         postnet_x = self.postnet(x)
         
         return (x, mel_mask, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
     
     
-def get_fastspeech2(config) -> FastSpeech2:
-    #TODO: Initialize after finalize config file structure
-    #TODO: Load checkpoint if exists
-    phoneme_size = config[""]
-    max_seq_len = config[""]
-    enc_hidden = config[""]
-    enc_heads = config[""]
-    enc_layers = config[""]
-    dec_hidden = config[""]
-    dec_heads = config[""]
-    dec_layers = config[""]
-    ed_conv_chans = config[""]
-    ed_kernel_size = config[""] 
-    enc_dropout = config[""] 
-    dec_dropout = config[""]
-    var_conv_chans = config[""]
-    var_kernel_size = config[""] 
-    n_bins = config[""]
-    var_dropout = config[""]
-    n_mel_chans = config[""]
-    pn_conv_chans = config[""]
-    pn_kernel_size = config[""]
-    pn_layers = config[""]
-    pn_dropout = config[""] 
-    pn_act_fn = config[""]
-    eps = config[""]
+def get_fastspeech2(config, phoneme_size) -> FastSpeech2:
+    max_seq_len = config["max_seq_len"]
+    model_config = config["fastspeech2"]
+    enc_hidden = model_config["enc_hidden"]
+    enc_heads = model_config["enc_heads"]
+    enc_layers = model_config["enc_layers"]
+    dec_hidden = model_config["dec_hidden"]
+    dec_heads = model_config["dec_heads"]
+    dec_layers = model_config["dec_layers"]
+    ed_conv_chans = model_config["conv_filter_size"]
+    ed_kernel_size = model_config["conv_kernel_size"]
+    enc_dropout = model_config["enc_dropout"]
+    dec_dropout = model_config["dec_dropout"]
+    var_conv_chans = model_config["var_conv_filter_size"]
+    var_kernel_size = model_config["var_conv_kernel_size"]
+    n_bins = config["variance_embedding"]["n_bins"]
+    var_dropout = model_config["var_dropout"]
+    n_mel_chans = config["preprocessing"]["mel"]["n_mel_channels"]
+    pn_conv_chans = model_config["postnet_filter_size"]
+    pn_kernel_size = model_config["postnet_kernel_size"]
+    pn_layers = model_config["postnet_layers"]
+    pn_dropout = model_config["postnet_dropout"] 
+    pn_act_fn = model_config["postnet_act_fn"]
+    eps = config["optimizer"]["eps"]
     
     model = FastSpeech2(
         phoneme_size, max_seq_len, enc_hidden, enc_heads, enc_layers, dec_hidden, dec_heads, dec_layers, 

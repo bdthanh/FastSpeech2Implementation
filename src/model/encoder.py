@@ -5,7 +5,7 @@ from .components.phoneme_embedding import PhonemeEmbedding
 from .components.layer_normalization import LayerNorm
 from .components.multi_head_attention import MultiHeadAttention
 from .components.position_wise_feed_forward import PositionWiseFeedForward
-from .components.positional_encoding import PositionalEncoding 
+from .components.positional_encoding import PositionalEncoding, get_positional_encoding
 
 class Encoder(Module):
   
@@ -13,14 +13,15 @@ class Encoder(Module):
                  n_heads: int = 2, n_layers: int = 4, dropout: float = 0.1, eps: float = 1e-6, max_seq_len: int = 1000) -> None:
         super().__init__()
         self.embedding = PhonemeEmbedding(phoneme_size=phoneme_size, d_hidden=d_hidden)
-        self.pos_encoding = PositionalEncoding(max_seq_len=max_seq_len, d_model=d_hidden)
+        # self.pos_encoding = PositionalEncoding(max_seq_len=max_seq_len, d_model=d_hidden)
         single_layer = EncoderLayer(d_hidden=d_hidden, conv_chans=conv_chans, n_heads=n_heads, kernel_size=kernel_size, dropout=dropout, eps=eps)
         self.encoder_layers = ModuleList([deepcopy(single_layer) for _ in range(n_layers)])
         
         
     def forward(self, src: Tensor, mask: Tensor):
         x = self.embedding(src)
-        x = self.pos_encoding(x)
+        _, seq_len, _ = x.size()
+        x = x + get_positional_encoding(seq_len, x.size(-1))
         for layer in self.encoder_layers:
             x = layer(x, mask)
             

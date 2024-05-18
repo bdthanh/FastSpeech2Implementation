@@ -2,10 +2,10 @@ import os
 import torch
 import yaml
 import numpy as np 
-from utils import pad_1D, pad_2D
+from .utils import pad_1D, pad_2D
 
 from torch.utils.data import Dataset, DataLoader
-from symbol_vocabulary import SymbolVocabulary
+from .symbol_vocabulary import SymbolVocabulary
 
 class ParallelDataset(Dataset):
     

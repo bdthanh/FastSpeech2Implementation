@@ -2,9 +2,9 @@ import torch
 import numpy as np
 from torch import Tensor
 from torch.nn import Module, Parameter
-from components.variance_predictor import VariancePredictor
-from components.length_regulator import LengthRegulator
-from utils import load_json, get_mask_from_lengths
+from .components.variance_predictor import VariancePredictor
+from .components.length_regulator import LengthRegulator
+from .utils import load_json, get_mask_from_lengths
 
 class VarianceAdaptor(Module):
     
@@ -12,6 +12,7 @@ class VarianceAdaptor(Module):
     def __init__(self, d_in: int, conv_chans: int = 256, kernel_size: int = 3, 
                  dropout:float=0.5, n_bins: int = 256) -> None:
         super().__init__()
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.duration_predictor = VariancePredictor(
             d_in=d_in, conv_chans=conv_chans, kernel_size=kernel_size, dropout=dropout
         )
@@ -23,15 +24,15 @@ class VarianceAdaptor(Module):
             d_in=d_in, conv_chans=conv_chans, kernel_size=kernel_size, dropout=dropout
         )
         #TODO: put file name in config.yaml
-        stats = load_json("pitch_energy_stats.json") 
-        pitch_stats = stats["pitch"]
-        energy_stats = stats["energy"]
+        stats = load_json("data/final_LJSpeech/stats.json") 
+        pitch_min, pitch_max, pitch_mean, pitch_std = stats["pitch"]
+        energy_min, energy_max, energy_mean, energy_std = stats["energy"]
         # bins for pitch and energy (log scale), n_bins-1 so that when bucketize we have n_bins
         self.pitch_bins = Parameter(
-            torch.exp(torch.linspace(pitch_stats["min"], np.log(pitch_stats["max"]), n_bins-1))
+            torch.exp(torch.linspace(np.log(pitch_min), np.log(pitch_max), n_bins-1))
         )
         self.energy_bins = Parameter(
-            torch.exp(torch.linspace(energy_stats["min"], np.log(energy_stats["max"]), n_bins-1))
+            torch.exp(torch.linspace(np.log(energy_min), np.log(energy_max), n_bins-1))
         ) 
         
         # According to the paper, there is a embedding layer for 
@@ -46,7 +47,7 @@ class VarianceAdaptor(Module):
         log_dur_pred = self.duration_predictor(x, src_mask)
         dur_rounded = torch.clamp(torch.round((torch.exp(log_dur_pred) - 1) * d_control), min=0)
         x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
-        mel_mask = get_mask_from_lengths(mel_durs) #get new mask after length regulation
+        mel_mask = get_mask_from_lengths(mel_durs, self.device) #get new mask after length regulation
         
         
         pitch_pred = self.pitch_predictor(x, mel_mask) * p_control
