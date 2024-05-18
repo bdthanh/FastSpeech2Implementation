@@ -31,15 +31,15 @@ class FastSpeech2(Module):
         )
     
     
-    def forward(self, x, src_mask, mel_mask, pitch_trg, energy_trg, max_dur, p_control=1.0, e_control=1.0, d_control=1.0):
+    def forward(self, x, src_mask, mel_mask, pitch_trg, energy_trg, max_dur=None, p_control=1.0, e_control=1.0, d_control=1.0):
         x = self.encoder(x, src_mask)
-        x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
+        x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
             x, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control    
         )
         x = self.decoder(x, mel_mask)
         postnet_x = self.postnet(x)
         
-        return (x, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
+        return (x, mel_mask, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
     
     
 def get_fastspeech2(config) -> FastSpeech2:

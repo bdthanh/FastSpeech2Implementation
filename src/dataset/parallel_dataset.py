@@ -117,15 +117,15 @@ if __name__ == "__main__":
     )
 
     train_dataset = ParallelDataset(
-        SymbolVocabulary(), "val.txt", config
+        SymbolVocabulary(), "train.txt", config
     )
     train_loader = DataLoader(
         train_dataset,
-        batch_size=2,
+        batch_size=50,
         shuffle=True,
         collate_fn=train_dataset.collate_fn,
     )
     i=0
     for batch in train_loader:
-        print(batch)
-        break
+        i+=1
+        print(i)

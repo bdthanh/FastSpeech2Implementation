@@ -4,7 +4,7 @@ from torch import Tensor
 from torch.nn import Module, Parameter
 from components.variance_predictor import VariancePredictor
 from components.length_regulator import LengthRegulator
-from utils import load_json
+from utils import load_json, get_mask_from_lengths
 
 class VarianceAdaptor(Module):
     
@@ -41,11 +41,12 @@ class VarianceAdaptor(Module):
     
             
     def forward(self, x: Tensor, pitch_trg: Tensor, energy_trg: Tensor = None, src_mask: Tensor = None, 
-                mel_mask: Tensor = None,max_dur: int = None, p_control: float = 1.0, e_control: float = 1.0, 
+                mel_mask: Tensor = None, max_dur: int = None, p_control: float = 1.0, e_control: float = 1.0, 
                 d_control: float = 1.0):
         log_dur_pred = self.duration_predictor(x, src_mask)
         dur_rounded = torch.clamp(torch.round((torch.exp(log_dur_pred) - 1) * d_control), min=0)
-        x = self.length_regulator(x, dur_rounded, max_dur)
+        x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
+        mel_mask = get_mask_from_lengths(mel_durs) #get new mask after length regulation
         
         
         pitch_pred = self.pitch_predictor(x, mel_mask) * p_control
@@ -62,5 +63,5 @@ class VarianceAdaptor(Module):
             energy_emb = self.energy_embedding(torch.bucketize(energy_pred, self.energy_bins))
         x = x + energy_pred
         
-        return (x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)        
+        return (x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)        
         

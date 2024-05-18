@@ -31,6 +31,8 @@ class ScheduledOptim:
         self._optimizer.load_state_dict(path)
         self.current_step = current_step
         
+    def state_dict(self):
+        return self._optimizer.state_dict()
 
     def _get_lr_scale(self):
         lr = np.min(

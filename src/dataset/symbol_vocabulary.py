@@ -40,5 +40,5 @@ class SymbolVocabulary:
         return len(self.symbol_to_id)
     
     def symbols_to_ids(self, symbols_list: List[str]):
-        return torch.tensor(list(map(lambda symbol: self.symbol_to_id[symbol], symbols_list)), dtype=torch.int64)
+        return np.array(list(map(lambda symbol: self.symbol_to_id[symbol], symbols_list)))
     
