@@ -16,15 +16,15 @@ class LengthRegulator(Module):
         for inner_x, pred_dur in zip(x, x_pred_dur):
             out = []
             for i, inner_x_item in enumerate(inner_x):
-                out.extend(inner_x_item.repeat(pred_dur[i], 1))
-                out = torch.cat(out, 0)
+                out.append(inner_x_item.repeat(int(pred_dur[i].item()), 1))
+            out = torch.cat(out, 0)
             output.append(out)
             mel_durs.append(out.size(0))
         if max_dur is not None:
             output = _pad(output, max_dur)
         else: # pad to the longest length in the batch
             output = _pad(output)
-        return output, torch.Tensor(mel_durs)
+        return output, torch.LongTensor(mel_durs)
     
     
 def _pad(x, mel_max_dur=None):

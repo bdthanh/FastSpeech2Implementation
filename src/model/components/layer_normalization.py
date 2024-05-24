@@ -16,6 +16,5 @@ class LayerNorm(Module):
         mean = x.mean(dim=-1, keepdim=True)
         std = x.std(dim=-1, keepdim=True)
         norm_x = (x - mean) / (std + self.eps)
-        
         return self.alpha * norm_x + self.beta
         
