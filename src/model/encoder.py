@@ -14,7 +14,9 @@ class Encoder(Module):
         super().__init__()
         self.embedding = PhonemeEmbedding(phoneme_size=phoneme_size, d_hidden=d_hidden)
         # self.pos_encoding = PositionalEncoding(max_seq_len=max_seq_len, d_model=d_hidden)
-        single_layer = EncoderLayer(d_hidden=d_hidden, conv_chans=conv_chans, n_heads=n_heads, kernel_size=kernel_size, dropout=dropout, eps=eps)
+        single_layer = EncoderLayer(
+            d_hidden=d_hidden, conv_chans=conv_chans, n_heads=n_heads, kernel_size=kernel_size, dropout=dropout, eps=eps
+        )
         self.encoder_layers = ModuleList([deepcopy(single_layer) for _ in range(n_layers)])
         
         
@@ -22,8 +24,10 @@ class Encoder(Module):
         x = self.embedding(src)
         _, seq_len, _ = x.size()
         x = x + get_positional_encoding(seq_len, x.size(-1))
+        attn_mask = mask.unsqueeze(1).unsqueeze(1).expand(-1, -1, seq_len, -1)
+        normal_mask = mask.unsqueeze(-1)
         for layer in self.encoder_layers:
-            x = layer(x, mask)
+            x = layer(x, normal_mask, attn_mask)
             
         return x  
       
@@ -42,14 +46,14 @@ class EncoderLayer(Module):
         self.feed_fwd_layer_norm = LayerNorm(d_hidden=d_hidden, eps=eps)
         
         
-    def forward(self, x: Tensor, mask: Tensor):
-        _x = self.self_attn(x, x, x, mask)
+    def forward(self, x: Tensor, normal_mask: Tensor, attn_mask: Tensor):
+        _x = self.self_attn(x, x, x, attn_mask)
         x = self.self_attn_layer_norm(x + self.self_attn_dropout(_x))
-        x = x.masked_fill(mask==0, 0)
+        x = x.masked_fill(normal_mask==0, 0)
         
         _x = self.feed_fwd(x)
         x = self.feed_fwd_layer_norm(x + self.feed_fwd_dropout(_x))
-        x = x.masked_fill(mask==0, 0)
+        x = x.masked_fill(normal_mask==0, 0)
         
         return x
         
