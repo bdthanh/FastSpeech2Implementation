@@ -186,7 +186,6 @@ class Preprocessor:
             ))
         phones = phones[:end_id]
         durs = durs[:end_id]
-        
         return phones, durs, start_time, end_time
             
                 

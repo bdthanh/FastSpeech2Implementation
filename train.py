@@ -59,7 +59,6 @@ def unpack_batch(batch, device):
     pitches = torch.from_numpy(batch['pitches']).float().to(device)
     energies = torch.from_numpy(batch['energies']).float().to(device)
     durations = torch.from_numpy(batch['durations']).long().to(device)
-
     return ids, raw_texts, speakers, phonemes, phonemes_lens, max_phoneme_len, mels, mel_lens, max_mel_len, pitches, energies, durations
 
 def epoch_eval(model: FastSpeech2, global_step: int, epoch: int, val_dataloader: DataLoader, device):
@@ -96,11 +95,12 @@ def train(config):
         for batch in batch_iter:
             optimizer.zero_grad() 
             ids, raw_texts, speakers, phonemes, phonemes_lens, max_phoneme_len, mel_trg, mel_lens, max_mel_len, pitch_trg, energy_trg, dur_trg = unpack_batch(batch, device)
+
             src_mask = get_mask_from_lengths(phonemes_lens, device, max_phoneme_len)
             mel_mask = get_mask_from_lengths(mel_lens, device, max_mel_len)
             #need 2 mel_mask for pred duration
             mel_pred, mel_mask, postnet_mel_pred, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = model(
-                phonemes, src_mask, mel_mask, pitch_trg, energy_trg
+                phonemes, src_mask, mel_mask, dur_trg, pitch_trg, energy_trg
             )    
             total_loss, mel_loss, mel_postnet_loss, dur_loss, pitch_loss, energy_loss = loss_func(
                 mel_trg, dur_trg, pitch_trg, energy_trg, mel_pred, postnet_mel_pred, log_dur_pred, pitch_pred, energy_pred, src_mask, mel_mask

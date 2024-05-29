@@ -41,13 +41,17 @@ class VarianceAdaptor(Module):
         self.energy_embedding = torch.nn.Embedding(n_bins, d_in)
     
             
-    def forward(self, x: Tensor, pitch_trg: Tensor, energy_trg: Tensor = None, src_mask: Tensor = None, 
+    def forward(self, x: Tensor, dur_trg: Tensor, pitch_trg: Tensor, energy_trg: Tensor = None, src_mask: Tensor = None, 
                 mel_mask: Tensor = None, max_dur: int = None, p_control: float = 1.0, e_control: float = 1.0, 
                 d_control: float = 1.0):
         log_dur_pred = self.duration_predictor(x, src_mask)
         dur_rounded = torch.clamp(torch.round((torch.exp(log_dur_pred) - 1) * d_control), min=0)
-        x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
-        mel_mask = get_mask_from_lengths(mel_durs, self.device) #get new mask after length regulation
+        
+        if dur_trg != None: 
+            x, mel_durs = self.length_regulator(x, dur_trg, max_dur)
+        else: 
+            x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
+        mel_mask = get_mask_from_lengths(mel_durs, self.device) # get new mask after length regulation
         
         
         pitch_pred = self.pitch_predictor(x, mel_mask) * p_control
@@ -55,14 +59,14 @@ class VarianceAdaptor(Module):
             pitch_emb = self.pitch_embedding(torch.bucketize(pitch_trg, self.pitch_bins))
         else: 
             pitch_emb = self.pitch_embedding(torch.bucketize(pitch_pred, self.pitch_bins))
-        x = x + pitch_pred
+        x = x + pitch_emb
         
         energy_pred = self.energy_predictor(x, mel_mask) * e_control
         if energy_trg != None: 
             energy_emb = self.energy_embedding(torch.bucketize(pitch_trg, self.pitch_bins))
         else: 
             energy_emb = self.energy_embedding(torch.bucketize(energy_pred, self.energy_bins))
-        x = x + energy_pred
+        x = x + energy_emb
         
         return (x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)        
         
