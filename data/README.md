@@ -1,0 +1,1 @@
+[LJSpeech dataset](https://keithito.com/LJ-Speech-Dataset/) is used in this project (similar to the paper)

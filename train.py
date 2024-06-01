@@ -132,6 +132,7 @@ def train(config):
         model.train()
         batch_iter = tqdm(train_loader, desc=f"Processing Epoch {epoch:02d}", total=len(train_loader))
         for batch in batch_iter:
+            # optimizer.zero_grad() #TODO: Test with zero_grad for minibatch
             ids, raw_texts, speakers, phonemes, phonemes_lens, max_phoneme_len, mel_trg, mel_lens, max_mel_len, pitch_trg, energy_trg, dur_trg = unpack_batch(batch, device)
 
             src_mask = get_mask_from_lengths(phonemes_lens, device, max_phoneme_len)
