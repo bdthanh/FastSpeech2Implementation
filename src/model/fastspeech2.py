@@ -45,7 +45,7 @@ class FastSpeech2(Module):
         return (x, mel_mask, postnet_x, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb)
     
     
-def get_fastspeech2(config, phoneme_size) -> FastSpeech2:
+def get_fastspeech2(config, phoneme_size, device) -> FastSpeech2:
     max_seq_len = config["max_seq_len"]
     model_config = config["fastspeech2"]
     enc_hidden = model_config["enc_hidden"]
@@ -74,7 +74,7 @@ def get_fastspeech2(config, phoneme_size) -> FastSpeech2:
         phoneme_size, max_seq_len, enc_hidden, enc_heads, enc_layers, dec_hidden, dec_heads, dec_layers, 
         ed_conv_chans, ed_kernel_size, enc_dropout, dec_dropout, var_conv_chans, var_kernel_size, n_bins, 
         var_dropout, n_mel_chans, pn_conv_chans, pn_kernel_size, pn_layers, pn_dropout, pn_act_fn, eps
-    )
+    ).to(device)
     
     for param in model.parameters():
         if param.dim() > 1:

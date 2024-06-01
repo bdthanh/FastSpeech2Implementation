@@ -106,7 +106,7 @@ def epoch_eval(model: FastSpeech2, loss_func: FastSpeech2Loss, global_step: int,
 def train(config):
     device = choose_device()
     symbol_vocab, train_loader, valid_loader = get_ds(config)
-    model = get_fastspeech2(config, len(symbol_vocab))
+    model = get_fastspeech2(config, len(symbol_vocab), device)
     optimizer = get_optimizer(model, config, cur_step=0)
     initial_epoch, global_step = 0, 0
     model, optimizer, initial_epoch, global_step = load_checkpoint_if_exists(
