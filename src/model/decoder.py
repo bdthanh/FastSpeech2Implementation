@@ -21,7 +21,8 @@ class Decoder(Module):
         
     def forward(self, x: Tensor, mask: Tensor):
         _, seq_len, _ = x.size()
-        x = x + get_positional_encoding(seq_len, x.size(-1))
+        device = x.device
+        x = x + get_positional_encoding(seq_len, x.size(-1)).to(device)
         attn_mask = mask.unsqueeze(1).unsqueeze(1).expand(-1, -1, seq_len, -1)
         normal_mask = mask.unsqueeze(-1)
         for layer in self.decoder_layers:

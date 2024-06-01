@@ -37,8 +37,6 @@ class FastSpeech2(Module):
         x, mel_mask, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = self.variance_adaptor(
             x, dur_trg, pitch_trg, energy_trg, src_mask, mel_mask, max_dur, p_control, e_control, d_control    
         )
-        _, seq_len, _ = x.size()
-        x = x + get_positional_encoding(seq_len, x.size(-1))
         x = self.decoder(x, mel_mask)
         postnet_x = self.postnet(x)
         
