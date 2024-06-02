@@ -52,7 +52,7 @@ class ScaledDotProductAttention(Module):
         d_k = k.size()[-1]
         attn_scores = torch.matmul(q, k.transpose(-1, -2)) / sqrt(d_k)
         if mask is not None: 
-            attn_scores = attn_scores.masked_fill(mask==0, float('-inf'))
+            attn_scores = attn_scores.masked_fill(mask, float('-inf'))
         attn_scores = self.softmax(attn_scores)
         v = torch.matmul(attn_scores, v)
         

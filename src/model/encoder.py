@@ -50,11 +50,11 @@ class EncoderLayer(Module):
     def forward(self, x: Tensor, normal_mask: Tensor, attn_mask: Tensor):
         _x = self.self_attn(x, x, x, attn_mask)
         x = self.self_attn_layer_norm(x + self.self_attn_dropout(_x))
-        x = x.masked_fill(normal_mask==0, 0)
+        x = x.masked_fill(normal_mask.unsqueeze(-1), 0)
         
         _x = self.feed_fwd(x)
         x = self.feed_fwd_layer_norm(x + self.feed_fwd_dropout(_x))
-        x = x.masked_fill(normal_mask==0, 0)
+        x = x.masked_fill(normal_mask.unsqueeze(-1), 0)
         
         return x
         
