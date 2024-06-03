@@ -58,7 +58,7 @@ path:
   pre_mfa_path: "data/pre_mfa_LJSpeech"
   post_mfa_path: "data/post_mfa_LJSpeech"
   final_path: "data/final_LJSpeech"
-  lexicon_path: "lexicon/ljspeech-lexicon.txt"
+  lexicon_path: "lexicon/librispeech-lexicon.txt"
   checkpoint_path: "checkpoints"
   checkpoint_best: "checkpoints/checkpoint_best.pt"
   checkpoint_last: "checkpoints/checkpoint_last.pt"
