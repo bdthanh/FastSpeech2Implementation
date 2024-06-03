@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 from g2p_en import G2p
 from string import punctuation
-from src.utils import load_config, is_file_exist, choose_device
+from src.utils import load_config, is_file_exist, choose_device, get_mask_from_lengths
 from src.dataset.symbol_vocabulary import SymbolVocabulary
 from src.model.fastspeech2 import get_fastspeech2
 from src.vocoder.models import get_vocoder
@@ -50,7 +50,11 @@ def load_checkpoint_if_exists(path, model):
         model.load_state_dict(checkpoint['model_state_dict'])
     return model
 
-def inference(model, config, vocoder, batchs, control_values):
+def inference(model, device, config, vocoder, phonemes, phonemes_len, max_phoneme_len, p_control, e_control, d_control):
+    src_masks = get_mask_from_lengths(phonemes_len, device, max_phoneme_len)
+    output = model(phonemes, src_masks)
+    mel_pred = output[0]
+    
     pass
 
 
@@ -75,7 +79,7 @@ if __name__ == "__main__":
         help="control the speed of the whole utterance, larger value for slower speaking rate",
     )
     args = parser.parse_args()
-    control_values = args.p_control, args.e_control, args.d_control
+    
     
     args = parser.parse_args()
     current_file_path = Path(__file__).resolve() 
@@ -88,7 +92,11 @@ if __name__ == "__main__":
     vocoder = get_vocoder(config, device)
     
     while text := input("Enter your script (less than 30 words):"):
-        phonemes = preprocess_english(text, config)
+        phonemes = np.array([preprocess_english(text, config)])
+        phonemes_len = np.array([len(phonemes[0])])
+        max_phoneme_len = phonemes_len
+        item = (phonemes, phonemes_len, max_phoneme_len)
+        inference(model, config, vocoder, torch.Tensor(phonemes).to(device), phonemes_len, max_phoneme_len, args.p_control, args.e_control, args.d_control)
         
     
     
