@@ -1,3 +1,4 @@
+import json
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -172,3 +173,26 @@ class Generator(torch.nn.Module):
             l.remove_weight_norm()
         remove_weight_norm(self.conv_pre)
         remove_weight_norm(self.conv_post)
+           
+class AttrDict(dict):
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+        
+def get_vocoder(config, device):
+    speaker = config["vocoder"]["speaker"]
+    
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    config = AttrDict(config)
+    vocoder = Generator(config)
+    if speaker == "LJSpeech":
+        ckpt = torch.load("hifigan/generator_LJSpeech.pth.tar")
+    elif speaker == "universal":
+        ckpt = torch.load("hifigan/generator_universal.pth.tar")
+    vocoder.load_state_dict(ckpt["generator"])
+    vocoder.eval()
+    vocoder.remove_weight_norm()
+    vocoder.to(device)
+
+    return vocoder
