@@ -22,7 +22,7 @@ class ParallelDataset(Dataset):
             filename
         )
 
-    def __len__(self):
+    def __len__(self):  
         return len(self.phonemes)
 
     def __getitem__(self, idx):

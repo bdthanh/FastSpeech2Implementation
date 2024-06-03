@@ -182,14 +182,14 @@ class AttrDict(dict):
 def get_vocoder(config, device):
     speaker = config["vocoder"]["speaker"]
     
-    with open("config.json", "r") as f:
+    with open(config["vocoder"]["vocoder_config_path"], "r") as f:
         config = json.load(f)
     config = AttrDict(config)
     vocoder = Generator(config)
     if speaker == "LJSpeech":
-        ckpt = torch.load("hifigan/generator_LJSpeech.pth.tar")
+        ckpt = torch.load("src/vocoder/generator_LJSpeech.pth.tar", map_location='cpu')
     elif speaker == "universal":
-        ckpt = torch.load("hifigan/generator_universal.pth.tar")
+        ckpt = torch.load("src/vocoder/generator_universal.pth.tar", map_location='cpu')
     vocoder.load_state_dict(ckpt["generator"])
     vocoder.eval()
     vocoder.remove_weight_norm()

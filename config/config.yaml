@@ -30,6 +30,7 @@ max_seq_len: 1000
 vocoder:
   model: "HiFi-GAN" 
   speaker: "LJSpeech" 
+  vocoder_config_path: "src/vocoder/config.json"
   
 optimizer:
   batch_size: 48
@@ -62,6 +63,7 @@ path:
   checkpoint_path: "checkpoints"
   checkpoint_best: "checkpoints/checkpoint_best.pt"
   checkpoint_last: "checkpoints/checkpoint_last.pt"
+
 
 preprocessing:
   val_size: 512
