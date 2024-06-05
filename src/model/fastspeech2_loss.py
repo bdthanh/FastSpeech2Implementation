@@ -12,8 +12,8 @@ class FastSpeech2Loss(Module):
         
     def forward(self, mel_trg, dur_trg, pitch_trg, energy_trg, mel_pred, mel_postnet_pred,
                 log_dur_pred, pitch_pred, energy_pred, src_mask, mel_mask):
-        src_mask = ~src_mask
-        mel_mask = ~mel_mask
+        # src_mask = ~src_mask
+        # mel_masks = ~mel_mask
         log_dur_trg = torch.log(dur_trg.float() + 1)
         mel_trg.requires_grad = False 
         log_dur_trg.requires_grad = False 
@@ -28,6 +28,7 @@ class FastSpeech2Loss(Module):
         energy_trg = energy_trg.masked_select(mel_mask)
         log_dur_pred = log_dur_pred.masked_select(src_mask)
         log_dur_trg = log_dur_trg.masked_select(src_mask)
+        print(log_dur_pred, log_dur_trg)
         mel_pred = mel_pred.masked_select(mel_mask.unsqueeze(-1))
         mel_postnet_pred = mel_postnet_pred.masked_select(mel_mask.unsqueeze(-1))
         mel_trg = mel_trg.masked_select(mel_mask.unsqueeze(-1))

@@ -23,7 +23,7 @@ class MultiHeadAttention(Module):
         output = self._concat(output)
         output = self.linear_concat(output)
         
-        return self.dropout(output)
+        return output
       
       
     def _split(self, x: Tensor):

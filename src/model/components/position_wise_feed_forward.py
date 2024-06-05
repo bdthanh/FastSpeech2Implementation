@@ -20,4 +20,4 @@ class PositionWiseFeedForward(Module):
         x = self.relu_1(x)
         x = self.conv1d_2(x)
         
-        return self.dropout(x.transpose(1, 2))
+        return x.transpose(1, 2)

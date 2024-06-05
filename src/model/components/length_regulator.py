@@ -11,11 +11,11 @@ class LengthRegulator(Module):
     
     def forward(self, x: Tensor, x_pred_dur, max_dur: int = None):
         #x: [B, seq_len, dim]
-        #x_len_ratio: [B, seq_len]
+        #x_pred_dur: [B, seq_len]
         output, mel_durs = [], []
-        for inner_x, pred_dur in zip(x, x_pred_dur):
+        for inner_x, pred_dur in zip(x, x_pred_dur): # inner_x: [seq_len, dim], pred_dur: [seq_len]
             out = []
-            for i, inner_x_item in enumerate(inner_x):
+            for i, inner_x_item in enumerate(inner_x): 
                 out.append(inner_x_item.repeat(int(pred_dur[i].item()), 1))
             out = torch.cat(out, 0)
             output.append(out)
