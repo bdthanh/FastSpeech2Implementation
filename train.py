@@ -135,7 +135,6 @@ def train(config):
 
             src_mask = get_mask_from_lengths(phonemes_lens, device, max_phoneme_len)
             mel_mask = get_mask_from_lengths(mel_lens, device, max_mel_len)
-            #need 2 mel_mask for pred duration
             mel_pred, mel_mask, postnet_mel_pred, log_dur_pred, dur_rounded, pitch_pred, pitch_emb, energy_pred, energy_emb = model(
                 phonemes, src_mask, mel_mask, dur_trg, pitch_trg, energy_trg
             )    

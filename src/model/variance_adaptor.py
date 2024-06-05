@@ -29,10 +29,10 @@ class VarianceAdaptor(Module):
         energy_min, energy_max, energy_mean, energy_std = stats["energy"]
         # bins for pitch and energy (log scale), n_bins-1 so that when bucketize we have n_bins
         self.pitch_bins = Parameter(
-            torch.exp(torch.linspace(np.log(pitch_min), np.log(pitch_max), n_bins-1))
+            torch.exp(torch.linspace(np.log(pitch_min), np.log(pitch_max), n_bins-1)), requires_grad=False
         )
-        self.energy_bins = Parameter(
-            torch.exp(torch.linspace(np.log(energy_min), np.log(energy_max), n_bins-1))
+        self.energy_bins = Parameter( 
+            torch.exp(torch.linspace(np.log(energy_min), np.log(energy_max), n_bins-1)), requires_grad=False
         ) 
         
         # According to the paper, there is a embedding layer for 
@@ -52,9 +52,8 @@ class VarianceAdaptor(Module):
             dur_rounded = dur_trg
         else: 
             x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
+            
         mel_mask = get_mask_from_lengths(mel_durs, self.device) # get new mask after length regulation
-        
-        
         pitch_pred = self.pitch_predictor(x, mel_mask) * p_control
         if pitch_trg != None: 
             pitch_emb = self.pitch_embedding(torch.bucketize(pitch_trg, self.pitch_bins))

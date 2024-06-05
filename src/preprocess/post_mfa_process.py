@@ -161,7 +161,6 @@ class Preprocessor:
             #TODO: See if removing outlier is needed
             self.remove_outlier(pitch),
             self.remove_outlier(energy),
-            # pitch, energy,
             mel_spectrogram.shape[1]
         )
 
