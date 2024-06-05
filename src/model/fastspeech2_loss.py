@@ -28,7 +28,6 @@ class FastSpeech2Loss(Module):
         energy_trg = energy_trg.masked_select(mel_mask)
         log_dur_pred = log_dur_pred.masked_select(src_mask)
         log_dur_trg = log_dur_trg.masked_select(src_mask)
-        print(log_dur_pred, log_dur_trg)
         mel_pred = mel_pred.masked_select(mel_mask.unsqueeze(-1))
         mel_postnet_pred = mel_postnet_pred.masked_select(mel_mask.unsqueeze(-1))
         mel_trg = mel_trg.masked_select(mel_mask.unsqueeze(-1))
