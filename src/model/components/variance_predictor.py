@@ -27,8 +27,9 @@ class VariancePredictor(Module):
         x = x.contiguous().transpose(1, 2)
         x = self.dropout_2(self.layer_norm_2(x))
         x = self.linear(x).squeeze(-1)
+        print(mask)
         if mask is not None:
-            x = x.masked_fill(mask==0, 0.0)
+            x = x.masked_fill(mask, 0.0)
             
         return x
         

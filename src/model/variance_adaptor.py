@@ -45,10 +45,11 @@ class VarianceAdaptor(Module):
                 mel_mask: Tensor = None, max_dur: int = None, p_control: float = 1.0, e_control: float = 1.0, 
                 d_control: float = 1.0):
         log_dur_pred = self.duration_predictor(x, src_mask)
-        dur_rounded = torch.clamp(torch.round((torch.exp(log_dur_pred) - 1) * d_control), min=0)
+        dur_rounded = torch.clamp(torch.round(torch.exp(log_dur_pred) - 1) * d_control, min=0)
         
         if dur_trg != None: 
             x, mel_durs = self.length_regulator(x, dur_trg, max_dur)
+            dur_rounded = dur_trg
         else: 
             x, mel_durs = self.length_regulator(x, dur_rounded, max_dur)
         mel_mask = get_mask_from_lengths(mel_durs, self.device) # get new mask after length regulation
