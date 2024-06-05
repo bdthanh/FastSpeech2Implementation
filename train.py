@@ -1,5 +1,3 @@
-import argparse
-import os
 import torch
 import wandb
 from pathlib import Path
@@ -36,8 +34,8 @@ def load_checkpoint_if_exists(path, model: FastSpeech2, optimizer: ScheduledOpti
 def get_ds(config):
     print("Getting dataset..........")
     symbol_vocab = SymbolVocabulary()
-    train_ds = ParallelDataset(symbol_vocab, "train.txt", config)
-    valid_ds = ParallelDataset(symbol_vocab, "valid.txt", config)
+    train_ds = ParallelDataset(symbol_vocab, "train.txt", config, train=True)
+    valid_ds = ParallelDataset(symbol_vocab, "valid.txt", config, train=False)
     train_loader = DataLoader(
         train_ds, batch_size=config['optimizer']['batch_size'], shuffle=True, collate_fn=train_ds.collate_fn
     )

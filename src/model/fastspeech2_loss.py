@@ -13,7 +13,7 @@ class FastSpeech2Loss(Module):
     def forward(self, mel_trg, dur_trg, pitch_trg, energy_trg, mel_pred, mel_postnet_pred,
                 log_dur_pred, pitch_pred, energy_pred, src_mask, mel_mask):
         src_mask = ~src_mask
-        mel_masks = ~mel_mask
+        mel_mask = ~mel_mask
         log_dur_trg = torch.log(dur_trg.float() + 1)
         mel_trg.requires_grad = False 
         log_dur_trg.requires_grad = False 

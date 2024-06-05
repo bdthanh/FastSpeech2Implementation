@@ -9,7 +9,7 @@ from .symbol_vocabulary import SymbolVocabulary
 
 class ParallelDataset(Dataset):
     
-    def __init__(self, symbol_vocab: SymbolVocabulary, filename, config):
+    def __init__(self, symbol_vocab: SymbolVocabulary, filename, config, train=True):
         self.dataset_name = config["dataset"]
         self.project_path = config['path']['project_path']
         self.post_mfa_path = config["path"]["post_mfa_path"]
