@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from torch import Tensor
-from torch.nn import Module, Parameter
+from torch.nn import Module, Parameter, Embedding
 from .components.variance_predictor import VariancePredictor
 from .components.length_regulator import LengthRegulator
 from .utils import load_json, get_mask_from_lengths
@@ -37,8 +37,8 @@ class VarianceAdaptor(Module):
         
         # According to the paper, there is a embedding layer for 
         # target pitch and energy to learn pitch and energy
-        self.pitch_embedding = torch.nn.Embedding(n_bins, d_in)
-        self.energy_embedding = torch.nn.Embedding(n_bins, d_in)
+        self.pitch_embedding = Embedding(n_bins, d_in)
+        self.energy_embedding = Embedding(n_bins, d_in)
     
             
     def forward(self, x: Tensor, dur_trg: Tensor, pitch_trg: Tensor, energy_trg: Tensor = None, src_mask: Tensor = None, 
