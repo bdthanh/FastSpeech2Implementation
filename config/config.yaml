@@ -83,9 +83,9 @@ preprocessing:
     mel_fmax: 8000 # please set to 8000 for HiFi-GAN vocoder, set to null for MelGAN vocoder
   pitch:
     feature: "frame_level" # support 'phoneme_level' or 'frame_level'
-    normalization: True
+    normalization: False
   energy:
     feature: "frame_level" # support 'phoneme_level' or 'frame_level'
-    normalization: True
+    normalization: False
 
 
