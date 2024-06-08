@@ -83,6 +83,7 @@ def epoch_eval(model: FastSpeech2, loss_func: FastSpeech2Loss, global_step: int,
             pitch_loss_sum += pitch_loss
             energy_loss_sum += energy_loss
             
+        # TODO: Make the eval loss unit consistent with the train loss (e.g: loss per 48 samples or per 1 sample)
         total_loss_avg = total_loss_sum / val_size
         mel_loss_avg = mel_loss_sum / val_size
         mel_postnet_loss_avg = mel_postnet_loss_sum / val_size
