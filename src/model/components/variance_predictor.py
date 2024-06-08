@@ -19,13 +19,17 @@ class VariancePredictor(Module):
         
     def forward(self, x: Tensor, mask: Tensor):
         x = x.contiguous().transpose(1, 2)
-        x = self.relu_1(self.conv1d_1(x))
+        x = self.conv1d_1(x)
         x = x.contiguous().transpose(1, 2)
+        x = self.relu_1(x)
         x = self.dropout_1(self.layer_norm_1(x))
+        
+        x = x.contiguous().transpose(1, 2)
+        x = self.conv1d_2(x)
         x = x.contiguous().transpose(1, 2)
         x = self.relu_2(self.conv1d_2(x))
-        x = x.contiguous().transpose(1, 2)
         x = self.dropout_2(self.layer_norm_2(x))
+        
         x = self.linear(x).squeeze(-1)
         if mask is not None:
             x = x.masked_fill(mask, 0.0)
