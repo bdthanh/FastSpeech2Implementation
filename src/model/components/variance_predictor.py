@@ -27,7 +27,7 @@ class VariancePredictor(Module):
         x = x.contiguous().transpose(1, 2)
         x = self.conv1d_2(x)
         x = x.contiguous().transpose(1, 2)
-        x = self.relu_2(self.conv1d_2(x))
+        x = self.relu_2(x)
         x = self.dropout_2(self.layer_norm_2(x))
         
         x = self.linear(x).squeeze(-1)
