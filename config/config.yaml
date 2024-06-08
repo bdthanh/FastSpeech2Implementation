@@ -19,8 +19,8 @@ fastspeech2:
   postnet_act_fn: "tanh"
 
 variance_embedding:
-  pitch_quantization: "log" # support 'linear' or 'log', 'log' is allowed only if the pitch values are not normalized during preprocessing
-  energy_quantization: "log" # support 'linear' or 'log', 'log' is allowed only if the energy values are not normalized during preprocessing
+  pitch_quantization: "linear" # support 'linear' or 'log', 'log' is allowed only if the pitch values are not normalized during preprocessing
+  energy_quantization: "linear" # support 'linear' or 'log', 'log' is allowed only if the energy values are not normalized during preprocessing
   n_bins: 256
 
 multi_speaker: False
@@ -83,9 +83,9 @@ preprocessing:
     mel_fmax: 8000 # please set to 8000 for HiFi-GAN vocoder, set to null for MelGAN vocoder
   pitch:
     feature: "frame_level" # support 'phoneme_level' or 'frame_level'
-    normalization: False
+    normalization: True
   energy:
     feature: "frame_level" # support 'phoneme_level' or 'frame_level'
-    normalization: False
+    normalization: True
 
 

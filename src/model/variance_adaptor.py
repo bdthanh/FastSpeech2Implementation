@@ -8,7 +8,7 @@ from .utils import load_json, get_mask_from_lengths
 
 class VarianceAdaptor(Module):
     
-    # In this project, pitch and energy will be processed in log scale and predicted in frame level
+    # In this project, pitch and energy will be processed in linear scale and predicted in frame level
     def __init__(self, d_in: int, conv_chans: int = 256, kernel_size: int = 3, 
                  dropout:float=0.5, n_bins: int = 256) -> None:
         super().__init__()
@@ -27,12 +27,12 @@ class VarianceAdaptor(Module):
         stats = load_json("data/final_LJSpeech/stats.json") 
         pitch_min, pitch_max, pitch_mean, pitch_std = stats["pitch"]
         energy_min, energy_max, energy_mean, energy_std = stats["energy"]
-        # bins for pitch and energy (log scale), n_bins-1 so that when bucketize we have n_bins
+        # bins for pitch and energy (linear scale), n_bins-1 so that when bucketize we have n_bins
         self.pitch_bins = Parameter(
-            torch.exp(torch.linspace(np.log(pitch_min), np.log(pitch_max), n_bins-1)), requires_grad=False
+            torch.linspace(pitch_min, pitch_max, n_bins-1), requires_grad=False
         )
         self.energy_bins = Parameter( 
-            torch.exp(torch.linspace(np.log(energy_min), np.log(energy_max), n_bins-1)), requires_grad=False
+            torch.linspace(energy_min, energy_max, n_bins-1), requires_grad=False
         ) 
         
         # According to the paper, there is a embedding layer for 
