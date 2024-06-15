@@ -11,7 +11,7 @@ from src.model.fastspeech2 import FastSpeech2, get_fastspeech2
 from src.model.fastspeech2_loss import FastSpeech2Loss
 from src.utils import choose_device, load_config, create_if_missing_folder, is_file_exist, get_num_params, get_mask_from_lengths
 
-def save_checkpoint(path, model: FastSpeech2, optimizer:ScheduledOptim, epoch, global_step):
+def save_checkpoint(path, model: FastSpeech2, optimizer: ScheduledOptim, epoch, global_step):
     torch.save({
         'epoch': epoch,
         'global_step': global_step,

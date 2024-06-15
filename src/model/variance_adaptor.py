@@ -23,7 +23,6 @@ class VarianceAdaptor(Module):
         self.energy_predictor = VariancePredictor(
             d_in=d_in, conv_chans=conv_chans, kernel_size=kernel_size, dropout=dropout
         )
-        #TODO: put file name in config.yaml
         stats = load_json("data/final_LJSpeech/stats.json") 
         pitch_min, pitch_max, pitch_mean, pitch_std = stats["pitch"]
         energy_min, energy_max, energy_mean, energy_std = stats["energy"]

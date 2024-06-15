@@ -62,11 +62,12 @@ class Preprocessor:
                     continue
                 info, pitch, energy, durs = outcome
                 out.append(info)
-                if len(pitch) > 0:
-                    pitch_scaler.partial_fit(pitch.reshape((-1, 1)))
-                if len(energy) > 0:
-                    energy_scaler.partial_fit(energy.reshape((-1, 1)))
-                n_frames += durs
+                
+            if len(pitch) > 0:
+                pitch_scaler.partial_fit(pitch.reshape((-1, 1)))
+            if len(energy) > 0:
+                energy_scaler.partial_fit(energy.reshape((-1, 1)))
+            n_frames += durs
             
         pitch_mean = pitch_scaler.mean_[0] if self.pitch_norm else 0
         pitch_std = pitch_scaler.scale_[0] if self.pitch_norm else 1
