@@ -2,7 +2,7 @@ import os
 import torch
 import yaml
 import numpy as np 
-from .utils import pad_1D, pad_2D
+from .utils import pad_1D, pad_2D, load_json
 
 from torch.utils.data import Dataset, DataLoader
 from .symbol_vocabulary import SymbolVocabulary
@@ -21,6 +21,9 @@ class ParallelDataset(Dataset):
         self.basenames, self.speakers, self.phonemes, self.raw_texts = self.process_metadata(
             filename
         )
+        self.stats = load_json("data/final_LJSpeech/stats.json") 
+        self.pitch_info = self.stats["pitch"]
+        self.energy_info = self.stats["energy"]
 
     def __len__(self):  
         return len(self.phonemes)
@@ -34,8 +37,10 @@ class ParallelDataset(Dataset):
         mel = np.load(mel_path)
         pitch_path = os.path.join(self.final_path, "pitch", get_target_path(speaker, "pitch", basename))
         pitch = np.load(pitch_path)
+        pitch = (pitch - self.pitch_info[2]) / self.pitch_info[3]
         energy_path = os.path.join(self.final_path, "energy", get_target_path(speaker, "energy", basename))
         energy = np.load(energy_path)
+        energy = (energy - self.energy_info[2]) / self.energy_info[3]
         duration_path = os.path.join(self.final_path, "duration", get_target_path(speaker, "duration", basename))
         duration = np.load(duration_path)
 

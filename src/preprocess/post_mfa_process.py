@@ -159,7 +159,6 @@ class Preprocessor:
         )
         return (
             "|".join([basename, self.speaker, phones_str, raw_text]),
-            #TODO: See if removing outlier is needed
             self.remove_outlier(pitch),
             self.remove_outlier(energy),
             mel_spectrogram.shape[1]
