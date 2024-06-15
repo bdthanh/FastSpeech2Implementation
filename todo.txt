@@ -1,0 +1,3 @@
+TODO:
+1. Rerun post_mfa_process
+2. Normalize pitch and energy before feeding to the model
